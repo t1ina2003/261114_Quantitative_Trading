@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1420">
+  <meta name="description" content="Quant Quest：零基礎也能玩的量化交易策略回測與樣本外驗證實驗室。">
+  <title>Quant Quest｜量化交易闖關實驗室</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="site-wrap">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Quant Quest 首頁"><span class="brand-mark">Q<span class="brand-dot">.</span></span><span>QUANT <strong>QUEST</strong><small>量化交易實驗室</small></span></a>
+      <span class="top-pill"><span class="live-dot"></span>互動教學 · 不連結券商</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">QUANTITATIVE TRADING · BEGINNER LAB</p>
+          <h1>不要猜股價。<br><em>讓交易規則接受測試。</em></h1>
+          <p class="hero-desc">當個量化策略研究員：挑選市場、設定買賣規則、與「買進持有」PK，最後揭曉沒看過的測試資料。你會發現：漂亮回測 ≠ 未來穩賺。</p>
+          <div class="hero-meta"><span>不用帳號</span><span>手機可玩</span><span>可匯入真實 CSV</span></div>
+        </div>
+        <div class="hero-decoration" aria-hidden="true"><div class="decor-grid"></div><div class="decor-line"></div><span class="decor-text">TEST YOUR EDGE</span><div class="decor-dots"><i></i><i></i><i></i></div></div>
+      </section>
+
+      <section class="journey" aria-label="遊戲流程">
+        <div class="journey-step is-active"><b>01</b><span>設計買賣規則</span></div>
+        <div class="journey-line"></div>
+        <div class="journey-step"><b>02</b><span>觀察訓練回測</span></div>
+        <div class="journey-line"></div>
+        <div class="journey-step" id="stepThree"><b>03</b><span>揭曉樣本外測試</span></div>
+      </section>
+
+      <div class="workspace">
+        <aside class="control-panel panel">
+          <div class="panel-heading"><div><p class="eyebrow">YOUR CONTROL ROOM</p><h2>策略控制台</h2></div><span class="tiny-tag">實驗模式</span></div>
+          <div class="control-section">
+            <div class="section-label"><span class="index-number">01</span><h3>選擇市場情境</h3></div>
+            <div class="market-buttons" role="group" aria-label="模擬市場情境">
+              <button class="market-option active" data-scenario="bull" type="button"><span>牛市轉折</span><small>先漲，後面未知</small></button>
+              <button class="market-option" data-scenario="sideways" type="button"><span>震盪市場</span><small>漲跌反覆</small></button>
+              <button class="market-option" data-scenario="bear" type="button"><span>熊市考驗</span><small>趨勢難捉摸</small></button>
+            </div>
+            <button id="reshuffle" class="text-button" type="button">↻ 重新產生另一段模擬市場</button>
+          </div>
+
+          <div class="control-section">
+            <div class="section-label"><span class="index-number">02</span><h3>建立交易策略</h3></div>
+            <label class="form-label" for="strategy">策略類型</label>
+            <select id="strategy"><option value="trend">趨勢追蹤：短均線站上長均線才持有</option><option value="dip">逆勢交易：跌深時買入、反彈賣出</option></select>
+            <div class="help-note" id="strategyExplainer">短期均線高於長期均線時持有，否則轉為現金。只做多、不做空。</div>
+            <div id="trendControls">
+              <div class="range-header"><label for="fast">短期均線</label><strong id="fastValue">15 日</strong></div>
+              <input id="fast" type="range" min="5" max="35" step="5" value="15">
+              <div class="range-header"><label for="slow">長期均線</label><strong id="slowValue">60 日</strong></div>
+              <input id="slow" type="range" min="40" max="120" step="10" value="60">
+            </div>
+            <div id="dipControls" hidden>
+              <div class="range-header"><label for="dipThreshold">低於 20 日均線多少才買？</label><strong id="dipValue">5%</strong></div>
+              <input id="dipThreshold" type="range" min="1" max="12" step="1" value="5">
+            </div>
+            <div class="range-header fee-head"><label for="fee">每次換倉成本</label><strong id="feeValue">0.15%</strong></div>
+            <input id="fee" type="range" min="0" max="0.5" step="0.05" value="0.15">
+            <p class="mini-explain">包含你自行假設的手續費與滑價；買賣各收一次，並非券商實際報價。</p>
+          </div>
+
+          <div class="control-section import-section">
+            <div class="section-label"><span class="index-number">03</span><h3>使用你自己的資料</h3></div>
+            <label class="upload-box" for="csvInput"><span class="upload-icon">↑</span><span><b>匯入歷史股價 CSV</b><small>Date,Close 或 Date,Adj Close · 至少 120 筆</small></span></label>
+            <input id="csvInput" type="file" accept=".csv,text/csv" hidden>
+            <div class="import-actions"><button type="button" class="text-button" id="downloadSample">↓ 下載範例 CSV</button><button type="button" class="text-button" id="backToSim" hidden>返回模擬資料</button></div>
+            <p id="uploadStatus" class="upload-status" role="status"></p>
+          </div>
+          <div class="warning-note">所有 CSV 都在你的瀏覽器本機處理，沒有上傳伺服器。這是教學回測，不會下單。</div>
+        </aside>
+
+        <section class="results-panel">
+          <div class="chart-panel panel">
+            <div class="chart-head">
+              <div><p class="eyebrow">BACKTEST ARENA</p><h2>你的策略 vs. 買入持有</h2><p class="chart-subtitle" id="dataTitle">合成資料 · 牛市轉折 · 360 個交易日</p></div>
+              <span class="status-badge" id="statusBadge">只看訓練資料</span>
+            </div>
+            <div class="chart-legend"><span><i class="legend-strategy"></i>你的策略</span><span><i class="legend-hold"></i>買入持有</span><span><i class="legend-hidden"></i>樣本外測試區</span></div>
+            <div id="chartShell" class="chart-shell"><svg id="equityChart" viewBox="0 0 820 340" preserveAspectRatio="xMidYMid meet" role="img" aria-label="訓練期間策略與買入持有的資產淨值走勢圖"></svg></div>
+            <div class="chart-caption"><span>起始資金：10,000 模擬單位</span><span>後 30% 資料不參與調參</span></div>
+          </div>
+
+          <div class="score-heading"><div><p class="eyebrow">PERFORMANCE DASHBOARD</p><h2 id="metricHeading">訓練期間成績</h2></div><span id="dateRange" class="date-range"></span></div>
+          <div class="metric-grid" id="metrics" aria-live="polite"></div>
+
+          <div class="decision-panel panel">
+            <div class="decision-head"><div><p class="eyebrow">THE REAL CHALLENGE</p><h2 id="decisionTitle">策略在沒看過的資料還有用嗎？</h2></div><span class="lesson-label">第 3 關</span></div>
+            <p id="decisionText">歷史回測很容易挑出漂亮結果。按下揭曉，才知道你調整的參數遇到下一段行情時表現如何。</p>
+            <button type="button" id="reveal" class="primary-button">揭曉樣本外結果 <span>→</span></button>
+            <div id="gameFeedback" class="game-feedback" hidden></div>
+            <p class="decision-footnote">修改參數或更換資料後會重新隱藏測試結果，提醒你不能用考題答案反過來選參數。</p>
+          </div>
+
+          <div class="insight-panel panel">
+            <div class="insight-icon">!</div><div><strong>量化交易真正實用在哪裡？</strong><p id="insightText">它讓「感覺會漲」變成可以重複測試的明確規則，並讓你同時看見報酬、風險和交易成本。</p></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="learning" aria-labelledby="learnTitle">
+        <div class="learning-head"><p class="eyebrow">WHAT YOU ACTUALLY LEARNED</p><h2 id="learnTitle">把玩過的流程，用在真正的投資研究</h2></div>
+        <div class="learning-grid">
+          <article><span>01 / 消除直覺偏誤</span><h3>先寫規則，再看結果</h3><p>明確定義何時買、何時賣；讓相同資料與設定能得到相同答案，而非事後解釋。</p></article>
+          <article><span>02 / 衡量風險</span><h3>不只看賺多少</h3><p>比較最大回撤、換手次數和扣成本的報酬。有時候策略不是報酬最高，卻能讓跌幅更小。</p></article>
+          <article><span>03 / 防止過度擬合</span><h3>把未來資料留作考試</h3><p>訓練回測只是練習題，樣本外測試更重要。連續嘗試很多參數仍可能碰巧找到幸運組合。</p></article>
+        </div>
+        <details class="methodology"><summary>這個遊戲的回測規則、限制與資料說明</summary><div class="method-body"><p><b>資料：</b>內建資料是使用固定亂數種子產生的「合成價格」，非台股或美股歷史資料。你也可以匯入依日期排列的 CSV。70% 作訓練、最後 30% 作一次性的樣本外測試；不代表真正即時交易。</p><p><b>避免偷看：</b>交易訊號只根據更早日子的收盤資料計算，下一個收盤價換倉，之後才計入持有期間的漲跌，並按換倉金額扣除設定的成本。計算假設可使用收盤價成交、可持有現金、不做空、不槓桿。</p><p><b>績效：</b>報酬是區間累積報酬（非年化）；最大回撤是該區間從淨值高點到低點的最大跌幅；換倉次數包含買入與賣出。比較基準是全程買入持有，採同樣的交易成本。測試期間收益從分割點淨值重新歸一化。</p><p><b>限制：</b>未完整模擬除權息、股票分割、稅務、市場交易限制、實際委託成交、流動性、下市倖存者偏差或資料修正等；未調整的收盤價也可能失真。即使樣本外成功，也不足以證明未來能獲利。</p></div></details>
+      </section>
+    </main>
+    <footer>QUANT QUEST <span>·</span> Learn the process. Question the result. <span>·</span> 僅供教學，非投資建議</footer>
+  </div>
+</body>
+</html>
