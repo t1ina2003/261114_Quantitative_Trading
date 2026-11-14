@@ -154,7 +154,7 @@
     const b = state.revealed ? testB : trainB;
     const rows = [
       ['我的策略報酬', percent(a.returnRate), '買入持有：' + percent(b.returnRate), a.returnRate >= 0 ? 'up' : 'down'],
-      ['贏過大盤基準', percent(a.returnRate - b.returnRate), '報酬差距（百分點）', a.returnRate >= b.returnRate ? 'up' : 'down'],
+      ['相對基準差距', (a.returnRate >= b.returnRate ? '+' : '') + ((a.returnRate - b.returnRate) * 100).toFixed(1) + ' 點', '相對買入持有（百分點）', a.returnRate >= b.returnRate ? 'up' : 'down'],
       ['最大回撤', '-' + (a.drawdown * 100).toFixed(1) + '%', '買入持有：-' + (b.drawdown * 100).toFixed(1) + '%', a.drawdown <= b.drawdown ? 'up' : 'down'],
       ['換倉次數', String(a.trades) + ' 次', '每次買進或賣出均計 1 次', '']
     ];
@@ -172,7 +172,6 @@
       div.append(heading, value, detail);
       $('metrics').appendChild(div);
     });
-    // Difference is already in percentage points, despite the percentage symbol used to display it.
     $('metricHeading').textContent = state.revealed ? '樣本外測試成績' : '訓練期間成績';
   }
 
